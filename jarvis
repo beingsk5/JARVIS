@@ -11,7 +11,7 @@
 set -e
 shopt -s inherit_errexit
 
-JARVIS_VER="v3.1"
+JARVIS_VER="v1.0"
 
 # ===== Main message functions ===== #
 msg_common() {
