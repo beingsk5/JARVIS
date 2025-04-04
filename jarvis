@@ -262,7 +262,7 @@ sync_tar() {
     #fi
 
     msg_info "Extracting tar..."
-    tar -I gzd -xf "Clang-21.0.0git-${r_tag}.tar.gz"
+    tar -I zstd -xf "Clang-21.0.0git-${r_tag}.tar.gz"
 
     echo "${build_info}" >"build.info"
     echo -e "\n[tag]\n 21.0.0git-${r_tag}-release" >>"build.info"
