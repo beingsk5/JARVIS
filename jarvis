@@ -184,7 +184,7 @@ JARVIS_update() {
         msg_info "Fetching the latest JARVIS..."
         local JARVIS_PATH
         JARVIS_PATH="$(pwd)/${SCRIPT_NAME}"
-        wget -q "https://raw.githubusercontent.com/beingsk5/JARVIS" -O "${JARVIS_PATH}" || {
+        wget -q "https://raw.githubusercontent.com/beingsk5/JARVIS/main/jarvis" -O "${JARVIS_PATH}" || {
             msg_error "Failed to fetch latest JARVIS. Please try again."
         }
 
@@ -209,16 +209,16 @@ sync_tar() {
     msg_info "Fetching build info..."
 
     if [[ $r_tag == "latest" ]]; then
-        r_tag=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/blob/main/Clang-main-lastbuild.txt" | grep -A1 tag | tail -n1)
+        r_tag=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt" | grep -A1 tag | tail -n1)
         msg_info "Using latest Tag: ${r_tag}"
     else
-        if ! wget -q "https://raw.githubusercontent.com/ZyCromerZ/Clang/blob/main/Clang-main-lastbuild.txt" -O- >/dev/null; then
+        if ! wget -q "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt" -O- >/dev/null; then
             msg_error "Invalid tag: $r_tag"
         fi
     fi
 
     local build_info
-    build_info=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/blob/main/Clang-main-lastbuild.txt")
+    build_info=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt")
 
     local clang_ver b_date llvm_c binutils_ver binutils_c t_glibc t_size t_shasum
     clang_ver=$(echo "${build_info}" | grep -A1 clang-ver | tail -n1)
@@ -345,9 +345,9 @@ upgrade_build() {
     msg_info "Checking for updates..."
     l_tag=$(grep -A1 tag build.info | tail -n1)
     if [[ $1 == "latest" ]]; then
-        r_tag=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/blob/main/Clang-main-lastbuild.txt" | grep -A1 tag | tail -n1)
+        r_tag=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt" | grep -A1 tag | tail -n1)
     else
-        if ! wget -q "https://raw.githubusercontent.com/ZyCromerZ/Clang/blob/main/$1-Clang-main-lastbuild.txt" -O- >/dev/null; then
+        if ! wget -q "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/$1-Clang-main-lastbuild.txt" -O- >/dev/null; then
             msg_error "Error: $1 is not a valid tag"
         fi
         r_tag=$1
