@@ -199,7 +199,7 @@ JARVIS_update() {
 # A function to fetch/download ZyC Clang builds from remote repos
 sync_tar() {
     msg_info "Checking dependencies"
-    check_dependency "gzd"
+    check_dependency "zstd"
     check_dependency "tar"
     check_dependency "wget"
     check_dependency "sha256sum"
