@@ -210,10 +210,10 @@ sync_tar() {
 
     if [[ $r_tag == "latest" ]]; then
         r_tag=$(wget -q --output-document - "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt" | grep -A1 tag | tail -n1)
-        msg_info "Using latest Tag: ${r_tag}"
+        msg_info "Using latest Tag: 21.0.0git-${r_tag}-release"
     else
         if ! wget -q "https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt" -O- >/dev/null; then
-            msg_error "Invalid tag: $r_tag"
+            msg_error "Invalid tag: 21.0.0git-${r_tag}-release"
         fi
     fi
 
@@ -265,12 +265,12 @@ sync_tar() {
     tar -I gzd -xf "Clang-21.0.0git-${r_tag}.tar.gz"
 
     echo "${build_info}" >"build.info"
-    echo -e "\n[tag]\n${r_tag}" >>"build.info"
+    echo -e "\n[tag]\n 21.0.0git-${r_tag}-release" >>"build.info"
 
     msg_info "Cleaning up..."
     rm -rf "Clang-21.0.0git-${r_tag}.tar.gz"
 
-    msg_success "Toolchain tag: ${r_tag} synced successfully"
+    msg_success "Toolchain tag: 21.0.0git-${r_tag}-release synced successfully"
 }
 
 # A function to delete toolchain files
@@ -352,14 +352,14 @@ upgrade_build() {
         fi
         r_tag=$1
     fi
-    if [[ ${l_tag} == "${r_tag}" ]]; then
+    if [[ ${l_tag} == "21.0.0git-${r_tag}-release" ]]; then
         msg_info "Nothing to do, Already up-to-date"
         exit 0
-    elif ! compare_tags "${l_tag}" "${r_tag}"; then
-        msg_error "The requested tag (${r_tag}) is older than the installed toolchain build (${l_tag})"
+    elif ! compare_tags "${l_tag}" "21.0.0git-${r_tag}-release"; then
+        msg_error "The requested tag (21.0.0git-${r_tag}-release) is older than the installed toolchain build (${l_tag})"
     fi
 
-    msg_info "New update found: ${l_tag} → ${r_tag}"
+    msg_info "New update found: ${l_tag} → 21.0.0git-${r_tag}-release"
     if [[ ${NOCONFIRM} -eq 0 ]]; then
         while true; do
             read -rp "Do you want to upgrade the toolchain? [Y/N] " yn
@@ -378,9 +378,9 @@ upgrade_build() {
     fi
     msg_info "Removing old toolchain files using ${SCRIPT_NAME} --delete"
     delete
-    msg_info "Downloading new toolchain build using ${SCRIPT_NAME} --sync=${r_tag}"
-    sync_tar "${r_tag}"
-    msg_success "Toolchain upgraded to ${r_tag}"
+    msg_info "Downloading new toolchain build using ${SCRIPT_NAME} --sync=21.0.0git-${r_tag}-release"
+    sync_tar "21.0.0git-${r_tag}"
+    msg_success "Toolchain upgraded to 21.0.0git-${r_tag}-release"
 }
 
 # A function to get toolchain info
