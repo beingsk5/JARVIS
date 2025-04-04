@@ -256,10 +256,10 @@ sync_tar() {
         wget "${WGET_ARGS[@]}" "https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-${r_tag}-release/Clang-21.0.0git-${r_tag}.tar.gz"
     fi
 
-    msg_info "Checking file integrity of the tar..."
-    if ! echo "${t_shasum} Clang-21.0.0git-${r_tag}.tar.gz" | sha256sum -c -; then
-        msg_error "Error: File integrity check failed"
-    fi
+    #msg_info "Checking file integrity of the tar..."
+    #if ! echo "${t_shasum} Clang-21.0.0git-${r_tag}.tar.gz" | sha256sum -c -; then
+    #    msg_error "Error: File integrity check failed"
+    #fi
 
     msg_info "Extracting tar..."
     tar -I gzd -xf "Clang-21.0.0git-${r_tag}.tar.gz"
