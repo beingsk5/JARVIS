@@ -18,6 +18,7 @@ export SUBARCH=arm64
 export KBUILD_COMPILER_STRING=$(clang --version | head -n 1)
 export CCACHE_EXEC=$(which ccache)
 export KBUILD_BUILD_HOST="@beingsk5"
+export LLVM=1
 export LLVM_IAS=1
 echo "CONFIG_BUILD_ARM64_DT_OVERLAY=y" >> gulch_defconfig
 
@@ -35,6 +36,7 @@ make -j$(nproc --all) O=out \
     AR=llvm-ar \
     NM=llvm-nm \
     LLVM_IAS=1 \
+    LLVM=1 \
     STRIP=llvm-strip \
     OBJCOPY=llvm-objcopy \
     OBJDUMP=llvm-objdump \
