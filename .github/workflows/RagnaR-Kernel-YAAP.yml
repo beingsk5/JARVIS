@@ -1,0 +1,116 @@
+name: Build KernelSU-Next for OnePlus-7-Series
+
+on:
+  push:
+    branches:
+      - jarvis
+  pull_request:
+    branches:
+      - jarvis
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container: ghcr.io/tedomi2705/kernel_builder_image:latest
+
+    steps:
+      - name: 📂 Checkout builder's sourcecode and get files
+        uses: actions/checkout@v4
+ 
+      - name: ⚡ Checkout kernel's sourcecode and clone submodules
+        run: |
+          rm -rf kernel
+          git clone --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
+
+      - name: 📅 Export date of build
+        run: |
+          echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV
+   
+      - name: 🔄 Update KernelSU-Next
+        run: |
+          cd kernel && patch -p1 < kernelsu.patch
+          patch -p1 < path_umount.patch
+          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+          cd ..
+          
+      - name: 📥 Clone AnyKernel3
+        run: |
+          cd kernel
+          git clone -b master --depth=1 https://github.com/beingsk5/AnyKernel3.git anykernel
+          rm -rf anykernel/.git
+
+      - name: 🔍 Device's codename and kernel's version
+        run: |
+          cd kernel
+          DEVICE_CODENAME=OnePlus-7-Series
+          KERNEL_VERSION=$(make kernelversion)
+
+          echo "Device Codename: $DEVICE_CODENAME"
+          echo "Kernel Version: $KERNEL_VERSION"
+
+          echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+
+      - name: 🚀 Enable ccache to speed the build up
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          max-size: 7G
+
+      - name: 🛠️ Build the kernel
+        run: |
+          ./build.sh OnePlus-7-Series
+
+      - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
+        run: |
+          cd kernel
+          ZIP_NAME="RagnaR-Kernel-${DEVICE_CODENAME}-${KERNEL_VERSION}-$(date +%d%m%Y).zip"
+
+          cp out/arch/arm64/boot/Image-dtb anykernel/
+
+          cd anykernel && zip -r9 $ZIP_NAME ./*
+          mv $ZIP_NAME ../../
+
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+
+      - name: 🤌 Copy zip file to get 2 different zip files
+        run: |
+
+          ZIP_ALTERNATIVE="KernelSU-Next-YAAP-RagnaR-${DEVICE_CODENAME}-latest.zip"
+          cp ${ZIP_NAME} $ZIP_ALTERNATIVE
+
+          echo "Copied ${ZIP_NAME} as $ZIP_ALTERNATIVE"
+          echo "ZIP_ALTERNATIVE=$ZIP_ALTERNATIVE" >> $GITHUB_ENV
+          
+      - name: 📤 Publish github release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_ALTERNATIVE }}
+          tag_name: "latest"
+          draft: false
+          prerelease: false
+
+      - name: 📤 Publish with tag associated to the kernel and the date
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_NAME }}
+          tag_name: RagnaR-Kernel-${{ env.DEVICE_CODENAME }}-${{ env.KERNEL_VERSION }}-${{ env.DATE }}
+          draft: false
+          prerelease: false
+
+#  notification:
+#    runs-on: ubuntu-22.04
+#    needs: build
+#    steps:
+
+#      - name: 📂 Checkout builder's sourcecode and get files
+#        uses: actions/checkout@v4
+
+#      - name: 🚀 Notify people on Discord
+#       env:
+#          DEVICE_CODENAME: OnePlus-7-Series
+#          KERNEL_VERSION: 4.14.355
+#          WEBHOOK: ${{ secrets.WEBHOOK }}
+#          NAME: RagnaR-Kernel-OnePlus-7-Serie-4.14.355.zip
+#        run: |
+#          python3 .github/webhook.py
