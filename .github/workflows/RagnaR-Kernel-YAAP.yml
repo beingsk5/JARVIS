@@ -12,19 +12,48 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    container: ghcr.io/tedomi2705/kernel_builder_image:latest
-
+    permissions:
+      contents: write
+      
     steps:
       - name: 📂 Checkout builder's sourcecode and get files
         uses: actions/checkout@v4
 
-      - name: Install curl
-        run: apt-get update && apt-get install -y curl
+      - name: Remove unnecessary files
+        run: |
+         sudo rm -rf /opt/ghc
+         sudo rm -rf "/usr/local/share/boost"
+         sudo rm -rf /usr/share/dotnet
+         sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Install dependencies
+        run: |
+         sudo apt-get update -y 
+         sudo apt install gcc-aarch64-linux-gnu -y
+         sudo apt install gcc-arm-linux-gnueabi -y
+         sudo apt install clang-18 -y
+         sudo apt install libelf-dev libarchive-tools lld llvm axel binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
+         sudo apt install openjdk-17-jdk-headless -y
+
+         mkdir -p "./toolchains/neutron-clang"
+         cd "./toolchains/neutron-clang"
+         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+         chmod +x antman
+         ./antman --sync=latest
+         ./antman --patch=glibc
  
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
           rm -rf kernel
           git clone --recurse-submodules --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
+
+      - name: Add Re:binder support
+        run: |
+         export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+         cd kernel
+         wget https://github.com/Sakion-Team/Re-Kernel/releases/download/modifier/Kernel-Modifier-v4.0.jar
+         /usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar ./Kernel-Modifier-v4.0.jar
+         cd ..
 
       - name: 📅 Export date of build
         run: |
