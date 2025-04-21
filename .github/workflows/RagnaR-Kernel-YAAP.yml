@@ -72,8 +72,10 @@ jobs:
           cd kernel
           ZIP_NAME="RagnaR-Kernel-${DEVICE_CODENAME}-${KERNEL_VERSION}-$(date +%d%m%Y).zip"
 
-          cp out/arch/arm64/boot/Image Image.gz-dtb Image.gz anykernel/
+          cp out/arch/arm64/boot/Image anykernel/
 
+          cd kernel
+          find out/ -type f -name "dtb" -exec cp {} anykernel/
           cd anykernel && zip -r9 $ZIP_NAME ./*
           mv $ZIP_NAME ../../
 
