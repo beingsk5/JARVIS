@@ -13,6 +13,7 @@ fi
 cd kernel
 
 # Export required variables
+export PATH=$(pwd)/toolchains/neutron-clang/bin/:$PATH
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_COMPILER_STRING=$(clang --version | head -n 1)
