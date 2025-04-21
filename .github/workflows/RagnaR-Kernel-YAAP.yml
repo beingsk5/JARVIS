@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: 📂 Checkout builder's sourcecode and get files
         uses: actions/checkout@v4
+
+      - name: Install curl
+        run: sudo apt-get update && sudo apt-get install -y curl  
  
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
