@@ -59,7 +59,7 @@ jobs:
 
       - name: 🛠️ Build the kernel
         run: |
-          chmod +x ./build.sh OnePlus-7-Serie
+          ./build.sh OnePlus-7-Serie
 
       - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
         run: |
