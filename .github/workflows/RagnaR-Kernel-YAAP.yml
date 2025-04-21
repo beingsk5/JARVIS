@@ -75,7 +75,7 @@ jobs:
           cp out/arch/arm64/boot/Image anykernel/
 
           cd kernel
-          find out/ -type f -name "dtb" -exec cp {} anykernel/
+          find out/ -type f -name dtb -exec cp {} anykernel/
           cd anykernel && zip -r9 $ZIP_NAME ./*
           mv $ZIP_NAME ../../
 
