@@ -89,7 +89,9 @@ jobs:
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: Make build.sh executable
-        run: chmod +x ./build.sh
+        run: |
+          cd kernel
+          chmod +x ./build.sh
         
       - name: 🛠️ Build the kernel
         run: |
