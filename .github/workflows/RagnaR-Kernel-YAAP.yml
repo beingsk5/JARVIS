@@ -45,7 +45,10 @@ jobs:
          chmod +x antman
          ./antman --sync=latest
          ./antman --patch=glibc
- 
+
+      - name: 📂 Checkout builder's sourcecode and get files
+        uses: actions/checkout@v4
+        
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
           rm -rf kernel
@@ -88,14 +91,14 @@ jobs:
           echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
+          
+
       - name: Make build.sh executable
         run: |
-          cd kernel
           chmod +x ./build.sh
         
       - name: 🛠️ Build the kernel
         run: |
-          cd kernel
           ./build.sh OnePlus-7-Series
 
       - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
