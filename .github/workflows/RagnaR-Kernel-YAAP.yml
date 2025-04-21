@@ -14,11 +14,15 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    env: 
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "7G"
+      CCACHE_HARDLINK: "true"
       
     steps:
-      - name: 📂 Checkout builder's sourcecode and get files
-        uses: actions/checkout@v4
-
+      - name: 🚀 Enable ccache to speed the build up
+        uses: hendrikmuhs/ccache-action@v1.2
       - name: Remove unnecessary files
         run: |
          sudo rm -rf /opt/ghc
@@ -83,11 +87,6 @@ jobs:
 
           echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-
-      - name: 🚀 Enable ccache to speed the build up
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          max-size: 7G
 
       - name: Make build.sh executable
         run: chmod +x ./build.sh
