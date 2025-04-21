@@ -1,4 +1,4 @@
-name: Build KernelSU-Next for OnePlus-7-Series
+name: Build KernelSU-Next for OnePlus-7-Serie
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
       - name: 🔍 Device's codename and kernel's version
         run: |
           cd kernel
-          DEVICE_CODENAME=OnePlus-7-Series
+          DEVICE_CODENAME=OnePlus-7-Serie
           KERNEL_VERSION=$(make kernelversion)
 
           echo "Device Codename: $DEVICE_CODENAME"
@@ -59,7 +59,7 @@ jobs:
 
       - name: 🛠️ Build the kernel
         run: |
-          chmod +x ./build.sh OnePlus-7-Series
+          chmod +x ./build.sh OnePlus-7-Serie
 
       - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
         run: |
@@ -108,7 +108,7 @@ jobs:
 
 #      - name: 🚀 Notify people on Discord
 #       env:
-#          DEVICE_CODENAME: OnePlus-7-Series
+#          DEVICE_CODENAME: OnePlus-7-Serie
 #          KERNEL_VERSION: 4.14.355
 #          WEBHOOK: ${{ secrets.WEBHOOK }}
 #          NAME: RagnaR-Kernel-OnePlus-7-Serie-4.14.355.zip
