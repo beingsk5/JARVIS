@@ -46,8 +46,8 @@ jobs:
          ./antman --sync=latest
          ./antman --patch=glibc
 
-      - name: 📂 Checkout builder's sourcecode and get files
-        uses: actions/checkout@v4
+#      - name: 📂 Checkout builder's sourcecode and get files
+#        uses: actions/checkout@v4
         
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
