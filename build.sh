@@ -18,8 +18,7 @@ export KERNEL_CMDLINE="ARCH=arm64 CC=clang CROSS_COMPILE_COMPAT=aarch64-linux-an
 export PATH=$(pwd)/toolchains/neutron-clang/bin/:$PATH
 export ARCH=arm64
 export SUBARCH=arm64
-export KBUILD_COMPILER_STRING=$(clang --version | head -n 1)
-export KBUILD_BUILD_HOST="@beingsk5"
+export KBUILD_BUILD_USER="@beingsk5"
 export BRAND_SHOW_FLAG=oneplus
 export TARGET_PRODUCT=msmnile
 # echo "CONFIG_BUILD_ARM64_DT_OVERLAY=y" >> gulch_defconfig
