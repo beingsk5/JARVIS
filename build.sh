@@ -25,7 +25,7 @@ echo "CONFIG_BUILD_ARM64_DT_OVERLAY=y" >> gulch_defconfig
 
 # Configure kernel     
 make O=out ARCH=arm64 gulch_defconfig 
-yes "" | make O=out ARCH=arm64 olddefconfig
+| make O=out ARCH=arm64 olddefconfig
 
 # Build kernel
 make -j$(nproc --all) O=out \
