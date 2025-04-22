@@ -24,7 +24,6 @@ export TARGET_PRODUCT=msmnile
 # echo "CONFIG_BUILD_ARM64_DT_OVERLAY=y" >> gulch_defconfig
 
 # Configure kernel     
-cd kernel
 make $KERNEL_CMDLINE CC="ccache clang" $KERNEL_DEFCONFIG
 # | make O=out ARCH=arm64 olddefconfig
 
