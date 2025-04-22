@@ -22,7 +22,7 @@ jobs:
       
     steps:
       - name: 📂 Checkout builder's sourcecode and get files
-        uses: taiki-e/checkout-action@v1
+        uses: actions/checkout@v2
       - name: 🚀 Enable ccache to speed the build up
         uses: hendrikmuhs/ccache-action@v1.2
       - name: Remove unnecessary files
