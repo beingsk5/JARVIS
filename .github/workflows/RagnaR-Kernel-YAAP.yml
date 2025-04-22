@@ -66,12 +66,12 @@ jobs:
         run: |
           echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV
    
-      - name: 🔄 Update KernelSU-Next
-        run: |
-          cd kernel && patch -p1 < kernelsu.patch
-          patch -p1 < path_umount.patch
-          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
-          cd ..
+#      - name: 🔄 Update KernelSU-Next
+#        run: |
+#          cd kernel && patch -p1 < kernelsu.patch
+#          patch -p1 < path_umount.patch
+#          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+#          cd ..
           
       - name: 📥 Clone AnyKernel3
         run: |
