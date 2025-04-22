@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-#    env: 
-#      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
-#      CCACHE_NOHASHDIR: "true"
-#      CCACHE_MAXSIZE: "7G"
-#      CCACHE_HARDLINK: "true"
+    env: 
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "7G"
+      CCACHE_HARDLINK: "true"
       
     steps:
-#      - name: 🚀 Enable ccache to speed the build up
-#        uses: hendrikmuhs/ccache-action@v1.2
+      - name: 🚀 Enable ccache to speed the build up
+        uses: hendrikmuhs/ccache-action@v1.2
       - name: Remove unnecessary files
         run: |
          sudo rm -rf /opt/ghc
@@ -66,12 +66,13 @@ jobs:
         run: |
           echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV
    
-#      - name: 🔄 Update KernelSU-Next
-#        run: |
-#          cd kernel && patch -p1 < kernelsu.patch
-#          patch -p1 < path_umount.patch
-#          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
-#          cd ..
+      - name: 🔄 Update KernelSU-Next
+        run: |
+          cd kernel 
+          patch -p1 < kernelsu.patch
+          patch -p1 < path_umount.patch
+          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+          cd ..
           
       - name: 📥 Clone AnyKernel3
         run: |
@@ -91,14 +92,6 @@ jobs:
           echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
       
-      - name: 🚀 Enable ccache to speed the build up
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
-          CCACHE_NOHASHDIR: "true"
-          CCACHE_MAXSIZE: "7G"
-          CCACHE_HARDLINK: "true"
-
       - name: Make build.sh executable
         run: |
           chmod +x ./build.sh
