@@ -52,7 +52,7 @@ jobs:
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
           rm -rf kernel
-          git clone --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
+          git clone --recurse-submodules --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
 
       - name: Add Re:binder support
         run: |
