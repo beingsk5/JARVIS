@@ -92,26 +92,13 @@ jobs:
           echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
       
-#      - name: Make build.sh executable
-#        run: |
-#          chmod +x ./build.sh
+      - name: Make build.sh executable
+        run: |
+          chmod +x ./build.sh
         
       - name: 🛠️ Build the kernel
         run: |
-          export KERNEL_DEFCONFIG="gulch_defconfig"
-          export KERNEL_CMDLINE="ARCH=arm64 CC=clang CROSS_COMPILE_COMPAT=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- READELF=llvm-readelf LLVM_DIS=llvm-dis AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1 LD=ld.lld HOSTCC=clang HOSTCXX=clang++ O=out"
-          export PATH=$(pwd)/toolchains/neutron-clang/bin/:$PATH
-          export ARCH=arm64
-          export SUBARCH=arm64
-          export KBUILD_BUILD_USER="@beingsk5"
-          export LD=ld.lld
-          export BRAND_SHOW_FLAG=oneplus
-          export TARGET_PRODUCT=msmnile
-          cd kernel
-          make $KERNEL_CMDLINE CC="ccache clang" $KERNEL_DEFCONFIG
-          make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
-#          cp out/arch/arm64/boot/Image ../AnyKernel3
-#          cd ..
+         ./build.sh OnePlus-7-Series
 
       - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
         run: |
