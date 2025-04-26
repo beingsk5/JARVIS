@@ -41,12 +41,22 @@ jobs:
          sudo apt install libelf-dev libarchive-tools lld llvm axel binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
          sudo apt install openjdk-17-jdk-headless -y
 
-         mkdir -p "./toolchains/neutron-clang"
-         cd "./toolchains/neutron-clang"
-         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-         chmod +x antman
-         ./antman --sync=latest
-         ./antman --patch=glibc
+         # mkdir -p "./toolchains/neutron-clang"
+         # cd "./toolchains/neutron-clang"
+         # curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
+         # chmod +x antman
+         # ./antman --sync=latest
+         # ./antman --patch=glibc
+
+      - name: 🔧 Install Clang from a Github action
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "18.1.8"
+          directory: ${{ runner.temp }}/toolchains/neutron-clang
+
+      - name: 🔧 Add Clang to the PATH
+        run: |
+          echo "${{ runner.temp }}/toolchains/neutron-clang/bin" >> $GITHUB_PATH
 
 #      - name: 📂 Checkout builder's sourcecode and get files
 #        uses: actions/checkout@v4
