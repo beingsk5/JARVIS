@@ -49,14 +49,11 @@ jobs:
          # ./antman --patch=glibc
 
       - name: 🔧 Install Clang from a Github action
-        uses: KyleMayes/install-llvm-action@v2
-        with:
-          version: "18.1.8"
-          directory: ${{ runner.temp }}/toolchains/neutron-clang
-
-      - name: 🔧 Add Clang to the PATH
         run: |
-          echo "${{ runner.temp }}/toolchains/neutron-clang/bin" >> $GITHUB_PATH
+         axel -q -n 6 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz
+         # axel -q -n 6 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/192fe0d378bb9cd4d4271de3e87145a1956fef40/clang-r536225.tar.gz
+         mkdir clang && tar -zxvf linux-x86-refs_heads_main-clang-r536225.tar.gz -C clang
+         # mkdir clang && tar -zxvf linux-x86-192fe0d378bb9cd4d4271de3e87145a1956fef40-clang-r536225.tar.gz -C clang
 
 #      - name: 📂 Checkout builder's sourcecode and get files
 #        uses: actions/checkout@v4
@@ -112,7 +109,7 @@ jobs:
         run: |
           export KERNEL_DEFCONFIG="gulch_defconfig"
           export KERNEL_CMDLINE="ARCH=arm64 CC=clang CROSS_COMPILE_COMPAT=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- READELF=llvm-readelf LLVM_DIS=llvm-dis AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1 LD=ld.lld HOSTCC=clang HOSTCXX=clang++ O=out"
-          export PATH=$(pwd)/toolchains/neutron-clang/bin/:$PATH
+          export PATH=$(pwd)/clang/bin/:$PATH
           export ARCH=arm64
           export SUBARCH=arm64
           export KBUILD_BUILD_USER="@beingsk5"
