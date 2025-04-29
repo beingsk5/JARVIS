@@ -17,12 +17,10 @@ jobs:
     env: 
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
       CCACHE_NOHASHDIR: "true"
-      CCACHE_MAXSIZE: "2G"
+      CCACHE_MAXSIZE: "7G"
       CCACHE_HARDLINK: "true"
       
     steps:
-#      - name: 📂 Checkout builder's sourcecode and get files
-#        uses: actions/checkout@v2
       - name: 🚀 Enable ccache to speed the build up
         uses: hendrikmuhs/ccache-action@v1.2
       - name: Remove unnecessary files
@@ -31,7 +29,6 @@ jobs:
          sudo rm -rf "/usr/local/share/boost"
          sudo rm -rf /usr/share/dotnet
          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
       - name: Install dependencies
         run: |
          sudo apt-get update -y 
@@ -40,21 +37,10 @@ jobs:
          sudo apt install clang-18 -y
          sudo apt install libelf-dev libarchive-tools lld llvm axel binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
          sudo apt install openjdk-17-jdk-headless -y
-
-         # mkdir -p "./toolchains/neutron-clang"
-         # cd "./toolchains/neutron-clang"
-         # curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
-         # chmod +x antman
-         # ./antman --sync=latest
-         # ./antman --patch=glibc
-
-      - name: 🔧 Install Clang from a Github action
-        run: |
+         
          axel -q -n 6 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz
-         # axel -q -n 6 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/192fe0d378bb9cd4d4271de3e87145a1956fef40/clang-r536225.tar.gz
          mkdir clang && tar -zxvf linux-x86-refs_heads_main-clang-r536225.tar.gz -C clang
-         # mkdir clang && tar -zxvf linux-x86-192fe0d378bb9cd4d4271de3e87145a1956fef40-clang-r536225.tar.gz -C clang
-
+         
 #      - name: 📂 Checkout builder's sourcecode and get files
 #        uses: actions/checkout@v4
         
@@ -62,7 +48,6 @@ jobs:
         run: |
           rm -rf kernel
           git clone --recurse-submodules --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
-
       - name: Add Re:binder support
         run: |
          export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
@@ -70,7 +55,6 @@ jobs:
          wget https://github.com/Sakion-Team/Re-Kernel/releases/download/modifier/Kernel-Modifier-v4.0.jar
          /usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar ./Kernel-Modifier-v4.0.jar
          cd ..
-
       - name: 📅 Export date of build
         run: |
           echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV
@@ -88,16 +72,13 @@ jobs:
           cd kernel
           git clone -b master --depth=1 https://github.com/beingsk5/AnyKernel3.git anykernel
           rm -rf anykernel/.git
-
       - name: 🔍 Device's codename and kernel's version
         run: |
           cd kernel
           DEVICE_CODENAME=OnePlus-7-Series
           KERNEL_VERSION=$(make kernelversion)
-
           echo "Device Codename: $DEVICE_CODENAME"
           echo "Kernel Version: $KERNEL_VERSION"
-
           echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
       
@@ -113,29 +94,27 @@ jobs:
           export ARCH=arm64
           export SUBARCH=arm64
           export KBUILD_BUILD_USER="@beingsk5"
+          export LD=ld.lld
           export BRAND_SHOW_FLAG=oneplus
-          export TARGET_PRODUCT=msmnile     
+          export TARGET_PRODUCT=msmnile
+          cd kernel
           make $KERNEL_CMDLINE CC="ccache clang" $KERNEL_DEFCONFIG
           make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
+#          cp out/arch/arm64/boot/Image ../AnyKernel3
+#          cd ..
 
       - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
         run: |
           cd kernel
           ZIP_NAME="RagnaR-Kernel-${DEVICE_CODENAME}-${KERNEL_VERSION}-$(date +%d%m%Y).zip"
-
           cp out/arch/arm64/boot/Image anykernel/
-
           cd anykernel && zip -r9 $ZIP_NAME ./*
           mv $ZIP_NAME ../../
-
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
-
       - name: 🤌 Copy zip file to get 2 different zip files
         run: |
-
           ZIP_ALTERNATIVE="KernelSU-Next-YAAP-RagnaR-${DEVICE_CODENAME}-latest.zip"
           cp ${ZIP_NAME} $ZIP_ALTERNATIVE
-
           echo "Copied ${ZIP_NAME} as $ZIP_ALTERNATIVE"
           echo "ZIP_ALTERNATIVE=$ZIP_ALTERNATIVE" >> $GITHUB_ENV
           
