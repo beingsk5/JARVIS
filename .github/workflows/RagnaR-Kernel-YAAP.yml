@@ -126,8 +126,8 @@ jobs:
           draft: false
           prerelease: false
           body: |
-          Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
-          Target: YAAP A15
+            Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+            Target: YAAP A15
 
       - name: 📤 Publish with tag associated to the kernel and the date
         uses: softprops/action-gh-release@v2
@@ -137,8 +137,8 @@ jobs:
           draft: false
           prerelease: false
           body: |
-          Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
-          Target: YAAP A15
+            Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+            Target: YAAP A15
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
