@@ -126,7 +126,7 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+            Device: Oneplus 7 Series All Device Supported
             Target: YAAP A15
 
       - name: 📤 Publish with tag associated to the kernel and the date
@@ -137,24 +137,7 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+            Device: Oneplus 7 Series All Device Supported
             Target: YAAP A15
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#  notification:
-#    runs-on: ubuntu-22.04
-#    needs: build
-#    steps:
-
-#      - name: 📂 Checkout builder's sourcecode and get files
-#        uses: actions/checkout@v4
-
-#      - name: 🚀 Notify people on Discord
-#       env:
-#          DEVICE_CODENAME: OnePlus-7-Series
-#          KERNEL_VERSION: 4.14.355
-#          WEBHOOK: ${{ secrets.WEBHOOK }}
-#          NAME: RagnaR-Kernel-OnePlus-7-Series-4.14.355.zip
-#        run: |
-#          python3 .github/webhook.py
