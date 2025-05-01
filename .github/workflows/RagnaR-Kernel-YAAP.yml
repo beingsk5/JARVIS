@@ -125,14 +125,22 @@ jobs:
           tag_name: "latest"
           draft: false
           prerelease: false
+          body: |
+          Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+          Target: YAAP A15
 
       - name: 📤 Publish with tag associated to the kernel and the date
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.ZIP_NAME }}
-          tag_name: RagnaR-Kernel-${{ env.DEVICE_CODENAME }}-${{ env.KERNEL_VERSION }}-${{ env.DATE }}
+          tag_name: RagnaR-Kernel-${{ env.DATE }}
           draft: false
           prerelease: false
+          body: |
+          Device: Oneplus 7/Oneplus 7Pro/Oneplus 7T/Oneplus 7TPro
+          Target: YAAP A15
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #  notification:
 #    runs-on: ubuntu-22.04
