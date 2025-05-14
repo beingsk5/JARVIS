@@ -1,2 +1,2 @@
 # JARVIS
-Kernel Builder
+Kernel Builder for oneplus 7 series 
