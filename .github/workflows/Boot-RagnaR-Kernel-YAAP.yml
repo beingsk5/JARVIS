@@ -1,0 +1,178 @@
+name: Injecting RagnaR-Kernel in Boot Image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  process-boot-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git unzip
+
+      - name: 📅 Export date of build
+        run: |
+          echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV    
+
+  #    - name: Download boot.img
+  #      run: |
+  #        curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamole/20250512/boot.img
+
+  #    - name: Download KernelSU-Next
+  #      run: |
+  #        curl -L -o KernelSU-Next-YAAP-RagnaR-OnePlus-7-Series-latest.zip https://github.com/beingsk5/JARVIS/releases/download/RagnaR-Kernel-latest/KernelSU-Next-YAAP-RagnaR-OnePlus-7-Series-latest.zip
+
+      - name: Unpack boot.img
+        run: |
+          git clone https://github.com/Shubhamvis98/AIK.git
+
+      - name: Unpack guacamole boot.img
+        run: |
+          cd AIK
+          curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamole/20250512/boot.img
+          ./unpackimg boot.img
+          cd split
+          rm kernel
+
+      - name: Extract KernelSU
+        run: |
+          cd AIK
+          curl -L -o KernelSU.zip https://github.com/beingsk5/JARVIS/releases/download/RagnaR-Kernel-latest/KernelSU-Next-YAAP-RagnaR-OnePlus-7-Series-latest.zip
+          unzip KernelSU.zip -d ./KernelSU
+          cp KernelSU/Image ../AIK/split/
+
+      - name: Repack guacamole.img
+        run: |
+          cd AIK
+          ./repackimg
+          ./cleanup
+          rm boot.img
+          mv new-boot.img guacamole.img
+          echo "Repacked boot image is ready: guacamole.img"
+
+      - name: Unpack guacamoleb boot.img
+        run: |
+          cd AIK
+          curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamoleb/20250512/boot.img
+          ./unpackimg boot.img
+          cd split
+          rm kernel
+
+      - name: Injecting Kernel
+        run: |
+          cd AIK    
+          cp KernelSU/Image ../AIK/split/
+
+      - name: Repack guacamoleb.img
+        run: |
+          cd AIK
+          ./repackimg
+          ./cleanup
+          rm boot.img
+          mv new-boot.img guacamoleb.img
+          echo "Repacked boot image is ready: guacamoleb.img"
+
+      - name: Unpack guacamoles boot.img
+        run: |
+          cd AIK
+          curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamoles/20250512/boot.img
+          ./unpackimg boot.img
+          cd split
+          rm kernel
+
+      - name: Injecting Kernel
+        run: |
+          cd AIK    
+          cp KernelSU/Image ../AIK/split/
+
+      - name: Repack guacamoles.img
+        run: |
+          cd AIK
+          ./repackimg
+          ./cleanup
+          rm boot.img
+          mv new-boot.img guacamoles.img
+          echo "Repacked boot image is ready: guacamoles.img"    
+
+      - name: Unpack hotdog boot.img
+        run: |
+          cd AIK
+          curl -L -o boot.img https://mirror.codebucket.de/yaap/hotdog/20250512/boot.img
+          ./unpackimg boot.img
+          cd split
+          rm kernel
+
+      - name: Injecting Kernel
+        run: |
+          cd AIK    
+          cp KernelSU/Image ../AIK/split/
+
+      - name: Repack hotdog.img
+        run: |
+          cd AIK
+          ./repackimg
+          ./cleanup
+          rm boot.img
+          mv new-boot.img hotdog.img
+          echo "Repacked boot image is ready: hotdog.img"    
+
+      - name: Unpack hotdogb boot.img
+        run: |
+          cd AIK
+          curl -L -o boot.img https://mirror.codebucket.de/yaap/hotdogb/20250512/boot.img
+          ./unpackimg boot.img
+          cd split
+          rm kernel
+
+      - name: Injecting Kernel
+        run: |
+          cd AIK    
+          cp KernelSU/Image ../AIK/split/
+
+      - name: Repack hotdogb.img
+        run: |
+          cd AIK
+          ./repackimg
+          ./cleanup
+          rm boot.img
+          mv new-boot.img hotdogb.img
+          echo "Repacked boot image is ready: hotdogb.img"    
+                     
+      - name: List files in AIK directory
+        run: |
+          cd AIK
+          ls -la  # List all files to check if guacamole.img exists
+
+      - name: Check for existing release
+        run: |
+          if git tag -l | grep -q "Boot.img"; then
+            echo "Release with tag 'Boot.img' already exists. Skipping release creation."
+            exit 0
+          fi
+
+      - name: Release new boot image
+        uses: softprops/action-gh-release@v1
+        with:
+          files: AIK/guacamole.img,
+                 AIK/guacamoleb.img,
+                 AIK/guacamoles.img,
+                 AIK/hotdog.img,
+                 AIK/hotdogb.img,
+          tag_name: Boot.img-${{ env.DATE }}
+     
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
