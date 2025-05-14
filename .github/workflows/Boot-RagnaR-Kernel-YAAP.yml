@@ -3,10 +3,10 @@ name: Injecting RagnaR-Kernel in Boot Image
 on:
   push:
     branches:
-      - main
+      - boot
   pull_request:
     branches:
-      - main
+      - boot
   workflow_dispatch:
 
 jobs:
