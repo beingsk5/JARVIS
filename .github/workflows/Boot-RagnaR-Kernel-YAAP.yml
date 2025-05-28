@@ -38,11 +38,13 @@ jobs:
 
       - name: Unpack boot.img
         run: |
+          mkdir boot
+          cd boot
           git clone https://github.com/Shubhamvis98/AIK.git
 
       - name: Unpack guacamole boot.img
         run: |
-          cd AIK
+          cd boot/AIK/
           curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamole/20250512/boot.img
           ./unpackimg boot.img
           cd split
@@ -50,14 +52,14 @@ jobs:
 
       - name: Extract KernelSU
         run: |
-          cd AIK
+          cd boot
           curl -L -o KernelSU.zip https://github.com/beingsk5/JARVIS/releases/download/RagnaR-Kernel-latest/KernelSU-Next-YAAP-RagnaR-OnePlus-7-Series-latest.zip
           unzip KernelSU.zip -d ./KernelSU
           cp KernelSU/Image ../AIK/split/
 
       - name: Repack guacamole.img
         run: |
-          cd AIK
+          cd boot/AIK/
           ./repackimg
           ./cleanup
           rm boot.img
@@ -66,7 +68,7 @@ jobs:
 
       - name: Unpack guacamoleb boot.img
         run: |
-          cd AIK
+          cd boot/AIK/
           curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamoleb/20250512/boot.img
           ./unpackimg boot.img
           cd split
@@ -74,12 +76,12 @@ jobs:
 
       - name: Injecting Kernel
         run: |
-          cd AIK    
+          cd boot/AIK/    
           cp KernelSU/Image ../AIK/split/
 
       - name: Repack guacamoleb.img
         run: |
-          cd AIK
+          cd boot/AIK/
           ./repackimg
           ./cleanup
           rm boot.img
@@ -88,7 +90,7 @@ jobs:
 
       - name: Unpack guacamoles boot.img
         run: |
-          cd AIK
+          cd boot/AIK/
           curl -L -o boot.img https://mirror.codebucket.de/yaap/guacamoles/20250512/boot.img
           ./unpackimg boot.img
           cd split
@@ -96,12 +98,12 @@ jobs:
 
       - name: Injecting Kernel
         run: |
-          cd AIK    
+          cd boot/AIK/    
           cp KernelSU/Image ../AIK/split/
 
       - name: Repack guacamoles.img
         run: |
-          cd AIK
+          cd boot/AIK/
           ./repackimg
           ./cleanup
           rm boot.img
@@ -110,7 +112,7 @@ jobs:
 
       - name: Unpack hotdog boot.img
         run: |
-          cd AIK
+          cd boot/AIK/
           curl -L -o boot.img https://mirror.codebucket.de/yaap/hotdog/20250512/boot.img
           ./unpackimg boot.img
           cd split
@@ -118,12 +120,12 @@ jobs:
 
       - name: Injecting Kernel
         run: |
-          cd AIK    
+          cd boot/AIK/    
           cp KernelSU/Image ../AIK/split/
 
       - name: Repack hotdog.img
         run: |
-          cd AIK
+          cd boot/AIK/
           ./repackimg
           ./cleanup
           rm boot.img
@@ -132,7 +134,7 @@ jobs:
 
       - name: Unpack hotdogb boot.img
         run: |
-          cd AIK
+          cd boot/AIK/
           curl -L -o boot.img https://mirror.codebucket.de/yaap/hotdogb/20250512/boot.img
           ./unpackimg boot.img
           cd split
@@ -140,12 +142,12 @@ jobs:
 
       - name: Injecting Kernel
         run: |
-          cd AIK    
+          cd boot/AIK/    
           cp KernelSU/Image ../AIK/split/
 
       - name: Repack hotdogb.img
         run: |
-          cd AIK
+          cd boot/AIK/
           ./repackimg
           ./cleanup
           rm boot.img
@@ -154,7 +156,7 @@ jobs:
                      
       - name: List files in AIK directory
         run: |
-          cd AIK
+          cd boot/AIK/
           ls -la  # List all files to check if guacamole.img exists
 
       - name: Check for existing release
@@ -167,11 +169,11 @@ jobs:
       - name: Release new boot image
         uses: softprops/action-gh-release@v1
         with:
-          files: AIK/guacamole.img,
-                 AIK/guacamoleb.img,
-                 AIK/guacamoles.img,
-                 AIK/hotdog.img,
-                 AIK/hotdogb.img,
+          files: boot/AIK/guacamole.img,
+                 boot/AIK/guacamoleb.img,
+                 boot/AIK/guacamoles.img,
+                 boot/AIK/hotdog.img,
+                 boot/AIK/hotdogb.img,
           tag_name: Boot.img-${{ env.DATE }}
      
 env:
