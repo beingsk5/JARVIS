@@ -47,7 +47,7 @@ jobs:
       - name: ⚡ Checkout kernel's sourcecode and clone submodules
         run: |
           rm -rf kernel
-          git clone --recurse-submodules --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b fifteen
+          git clone --recurse-submodules --depth=1 https://github.com/beingsk5/kernel_oneplus_sm8150 kernel -b sixteen
       - name: Add Re:binder support
         run: |
          export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
@@ -127,7 +127,7 @@ jobs:
           prerelease: false
           body: |
             Device: Oneplus 7 Series All Device Supported
-            Target: YAAP A15
+            Target: YAAP A16
 
       - name: 📤 Publish with tag associated to the kernel and the date
         uses: softprops/action-gh-release@v2
@@ -138,6 +138,6 @@ jobs:
           prerelease: false
           body: |
             Device: Oneplus 7 Series All Device Supported
-            Target: YAAP A15
+            Target: YAAP A16
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
