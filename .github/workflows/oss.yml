@@ -1,0 +1,144 @@
+name: Build KernelSU-Next for OnePlus-7-Series
+
+on:
+  push:
+    branches:
+      - jarvis
+  pull_request:
+    branches:
+      - jarvis
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env: 
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "7G"
+      CCACHE_HARDLINK: "true"
+      
+    steps:
+      - name: 🚀 Enable ccache to speed the build up
+        uses: hendrikmuhs/ccache-action@v1.2
+      - name: Remove unnecessary files
+        run: |
+         sudo rm -rf /opt/ghc
+         sudo rm -rf "/usr/local/share/boost"
+         sudo rm -rf /usr/share/dotnet
+         sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      - name: Install dependencies
+        run: |
+         sudo apt-get update -y 
+         sudo apt install gcc-aarch64-linux-gnu -y
+         sudo apt install gcc-arm-linux-gnueabi -y
+         sudo apt install clang-18 -y
+         sudo apt install libelf-dev libarchive-tools lld llvm axel binutils make python3 libssl-dev build-essential bc  bison flex unzip libssl-dev ca-certificates xz-utils mkbootimg cpio device-tree-compiler git git-lfs -y
+         sudo apt install openjdk-17-jdk-headless -y
+         
+         axel -q -n 6 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r536225.tar.gz
+         mkdir clang && tar -zxvf linux-x86-refs_heads_main-clang-r536225.tar.gz -C clang
+         
+#      - name: 📂 Checkout builder's sourcecode and get files
+#        uses: actions/checkout@v4
+        
+      - name: ⚡ Checkout kernel's sourcecode and clone submodules
+        run: |
+          rm -rf kernel
+          git clone --recurse-submodules --depth=1 https://github.com/beingsk5/android_kernel_oneplus_sm8150 kernel -b 12.1
+      - name: Add Re:binder support
+        run: |
+         export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+         cd kernel
+         wget https://github.com/Sakion-Team/Re-Kernel/releases/download/modifier/Kernel-Modifier-v4.0.jar
+         /usr/lib/jvm/java-17-openjdk-amd64/bin/java -jar ./Kernel-Modifier-v4.0.jar
+         cd ..
+      - name: 📅 Export date of build
+        run: |
+          echo "DATE=$(date +%d%m%Y)" >> $GITHUB_ENV
+   
+      - name: 🔄 Update KernelSU-Next
+        run: |
+          cd kernel 
+          patch -p1 < kernelsu.patch
+          patch -p1 < path_umount.patch
+          curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+          cd ..
+          
+      - name: 📥 Clone AnyKernel3
+        run: |
+          cd kernel
+          git clone -b master --depth=1 https://github.com/beingsk5/AnyKernel3.git anykernel
+          rm -rf anykernel/.git
+      - name: 🔍 Device's codename and kernel's version
+        run: |
+          cd kernel
+          DEVICE_CODENAME=OnePlus-7-Series
+          KERNEL_VERSION=$(make kernelversion)
+          echo "Device Codename: $DEVICE_CODENAME"
+          echo "Kernel Version: $KERNEL_VERSION"
+          echo "DEVICE_CODENAME=$DEVICE_CODENAME" >> $GITHUB_ENV
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+      
+#      - name: Make build.sh executable
+#        run: |
+#          chmod +x ./build.sh
+        
+      - name: 🛠️ Build the kernel
+        run: |
+          export KERNEL_DEFCONFIG="vendor/sm8150-perf_defconfig"
+          export KERNEL_CMDLINE="ARCH=arm64 CC=clang CROSS_COMPILE_COMPAT=aarch64-linux-android- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CLANG_TRIPLE=aarch64-linux-gnu- READELF=llvm-readelf LLVM_DIS=llvm-dis AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1 LD=ld.lld HOSTCC=clang HOSTCXX=clang++ O=out"
+          export PATH=$(pwd)/clang/bin/:$PATH
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export KBUILD_BUILD_USER="@beingsk5"
+          export LD=ld.lld
+          export BRAND_SHOW_FLAG=oneplus
+          export TARGET_PRODUCT=msmnile
+          export KCFLAGS="-Wno-error -Wno-unused-but-set-variable -Wno-incompatible-pointer-types -Wno-implicit-function-declaration"
+          cd kernel
+          make $KERNEL_CMDLINE CC="ccache clang" $KERNEL_DEFCONFIG
+          make $KERNEL_CMDLINE CC="ccache clang" -j$(nproc --all)
+#          cp out/arch/arm64/boot/Image ../AnyKernel3
+#          cd ..
+
+      - name: 🚀 Copy the compiled kernel to AnyKernel3 then create the zip
+        run: |
+          cd kernel
+          ZIP_NAME="RagnaR-Kernel-${DEVICE_CODENAME}-${KERNEL_VERSION}-$(date +%d%m%Y).zip"
+          cp out/arch/arm64/boot/Image anykernel/
+          cd anykernel && zip -r9 $ZIP_NAME ./*
+          mv $ZIP_NAME ../../
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+      - name: 🤌 Copy zip file to get 2 different zip files
+        run: |
+          ZIP_ALTERNATIVE="KernelSU-Next-YAAP-RagnaR-${DEVICE_CODENAME}-latest.zip"
+          cp ${ZIP_NAME} $ZIP_ALTERNATIVE
+          echo "Copied ${ZIP_NAME} as $ZIP_ALTERNATIVE"
+          echo "ZIP_ALTERNATIVE=$ZIP_ALTERNATIVE" >> $GITHUB_ENV
+          
+      - name: 📤 Publish github release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_ALTERNATIVE }}
+          tag_name: "RagnaR-Kernel-latest"
+          draft: false
+          prerelease: false
+          body: |
+            Device: Oneplus 7 Series All Device Supported
+            Target: YAAP A16
+
+      - name: 📤 Publish with tag associated to the kernel and the date
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_NAME }}
+          tag_name: RagnaR-Kernel-${{ env.DATE }}
+          draft: false
+          prerelease: false
+          body: |
+            Device: Oneplus 7 Series All Device Supported
+            Target: YAAP A16
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
